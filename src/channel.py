@@ -11,22 +11,25 @@ class Channel:
 
         self.__channel_id = channel_id
 
-        apikey = os.getenv('YOUTUBE_DATA_API')
-        youtube = build('youtube', 'v3', developerKey=apikey)
-        channel = youtube.channels().list(id=self.__channel_id, part='snippet,statistics').execute()
+        self.__apikey = os.getenv('YOUTUBE_DATA_API')
+        self.__youtube = build('youtube', 'v3', developerKey=self.__apikey)
+        self.__channel = self.__youtube.channels().list(id=self.__channel_id, part='snippet,statistics').execute()
 
-        self.title = channel['items'][0]['snippet']['title']
-        self.video_count = channel['items'][0]['statistics']['videoCount']
-        self.url = f"https://www.youtube.com/channel/{channel['items'][0]['id']}"
+        self.title = self.__channel['items'][0]['snippet']['title']
+        self.description = self.__channel['items'][0]['snippet']['description']
+        self.url = f"https://www.youtube.com/channel/{self.__channel['items'][0]['id']}"
+        self.subscriber_count = self.__channel['items'][0]['statistics']['subscriberCount']
+        self.video_count = self.__channel['items'][0]['statistics']['videoCount']
+        self.view_count = self.__channel['items'][0]['statistics']['viewCount']
+
+    @property
+    def channel_id(self):
+        return self.__channel_id
 
     def print_info(self) -> None:
         """Выводит в консоль информацию о канале."""
 
-        apikey = os.getenv('YOUTUBE_DATA_API')
-        youtube = build('youtube', 'v3', developerKey=apikey)
-        channel = youtube.channels().list(id=self.__channel_id, part='snippet,statistics').execute()
-
-        print((json.dumps(channel, indent=2, ensure_ascii=False)))
+        print((json.dumps(self.__channel, indent=2, ensure_ascii=False)))
 
     @classmethod
     def get_service(cls):
@@ -38,11 +41,20 @@ class Channel:
     def to_json(self, filename) -> None:
         """Создаём файл filename c данными по каналу"""
         with open(filename, 'w', encoding='utf-8') as file:
-            apikey = os.getenv('YOUTUBE_DATA_API')
-            youtube = build('youtube', 'v3', developerKey=apikey)
-            channel = youtube.channels().list(id=self.__channel_id, part='snippet,statistics').execute()
-            json.dump(channel, file, indent=4)
+            data = {
+                'id': self.__channel_id,
+                'title': self.title,
+                'description': self.description,
+                'url': self.url,
+                'subscriberCount': self.subscriber_count,
+                'videoCount': self.video_count,
+                'viewCount': self.view_count
+            }
+
+            json.dump(data, file, indent=2)
 
 
 if __name__ == '__main__':
-    Channel('UCMCgOm8GZkHp8zJ6l7_hIuA').print_info()
+    channel = Channel('UCMCgOm8GZkHp8zJ6l7_hIuA')
+    channel.print_info()
+    # print(channel.title, channel.description) - Выводится нормально
