@@ -51,10 +51,9 @@ class Channel:
                 'viewCount': self.view_count
             }
 
-            json.dump(data, file, indent=2)
+            json.dump(data, file, indent=2, ensure_ascii = False)
 
 
 if __name__ == '__main__':
     channel = Channel('UCMCgOm8GZkHp8zJ6l7_hIuA')
     channel.print_info()
-    # print(channel.title, channel.description) - Выводится нормально
