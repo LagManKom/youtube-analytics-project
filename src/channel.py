@@ -22,14 +22,38 @@ class Channel:
         self.video_count = self.__channel['items'][0]['statistics']['videoCount']
         self.view_count = self.__channel['items'][0]['statistics']['viewCount']
 
-    @property
-    def channel_id(self):
-        return self.__channel_id
+    def __str__(self):
+        return f'{self.title} ({self.url})'
+
+    def __add__(self, other):
+        return int(self.subscriber_count) + int(other.subscriber_count)
+
+    def __sub__(self, other):
+        return int(self.subscriber_count) - int(other.subscriber_count)
+
+    def __eq__(self, other):
+        return self.subscriber_count == other.subscriber_count
+
+    def __lt__(self, other):
+        return self.subscriber_count < other.subscriber_count
+
+    def __gt__(self, other):
+        return self.subscriber_count > other.subscriber_count
+
+    def __le__(self, other):
+        return self.subscriber_count <= other.subscriber_count
+
+    def __ge__(self, other):
+        return self.subscriber_count >= other.subscriber_count
 
     def print_info(self) -> None:
         """Выводит в консоль информацию о канале."""
 
         print((json.dumps(self.__channel, indent=2, ensure_ascii=False)))
+
+    @property
+    def channel_id(self):
+        return self.__channel_id
 
     @classmethod
     def get_service(cls):
@@ -51,7 +75,7 @@ class Channel:
                 'viewCount': self.view_count
             }
 
-            json.dump(data, file, indent=2, ensure_ascii = False)
+            json.dump(data, file, indent=2, ensure_ascii=False)
 
 
 if __name__ == '__main__':
