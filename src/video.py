@@ -13,11 +13,11 @@ class Video:
 
         try:
             response = requests.get(f'https://www.youtube.com/{self.video_id}')
-            # if response.status_code == 404:
-            #     raise HttpError
-            response.raise_for_status()
+            if response.status_code == 404:
+                raise HttpError
+            # requests.get()
 
-        except requests.exceptions.HTTPError:
+        except HttpError:
             self.video_title = None
             self.video_url = None
             self.view_count = None
